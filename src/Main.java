@@ -1,6 +1,8 @@
-import processing.core.*;
+import processing.core.PApplet;
 
 public class Main extends PApplet {
+
+    public GameGrid grid;
 
     public static void main(String[] args) {
         PApplet.main("Main");
@@ -8,6 +10,14 @@ public class Main extends PApplet {
 
     @Override
     public void settings() {
-        size(500, 500);
+        grid = new GameGrid(new Vector(9, 11), 32);
+        Vector windowSize = grid.cellToWorldScale(grid.gridSize);
+        size(windowSize.x, windowSize.y);
+    }
+
+    @Override
+    public void draw() {
+        background(0);
+        grid.draw(this);
     }
 }
