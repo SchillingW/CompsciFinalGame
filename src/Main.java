@@ -2,7 +2,9 @@ import processing.core.PApplet;
 
 public class Main extends PApplet {
 
-    public GameGrid grid;
+    private GameGrid grid;
+    private MultiKeyMap<Character, Vector> dpadMapping;
+    private StepDevice stepDevice;
 
     public static void main(String[] args) {
         PApplet.main("Main");
@@ -10,14 +12,51 @@ public class Main extends PApplet {
 
     @Override
     public void settings() {
-        grid = new GameGrid(new Vector(9, 11), 32);
+
+        dpadMapping = new MultiKeyMap<>(
+                new Character[][] {
+                        new Character[] {'d'},
+                        new Character[] {'s'},
+                        new Character[] {'a'},
+                        new Character[] {'w'}
+                },
+                new Vector[] {
+                        new Vector(1, 0),
+                        new Vector(0, 1),
+                        new Vector(-1, 0),
+                        new Vector(0, -1)
+                }
+        );
+
+        Block blockTemplate = new Block(2);
+        Player playerTemplate = new Player(1);
+
+        grid = new GameGrid(
+                new Vector(9, 11), 16, 0.75, 32,
+                playerTemplate, blockTemplate);
+
         Vector windowSize = grid.cellToWorldScale(grid.gridSize);
         size(windowSize.x, windowSize.y);
+
+        stepDevice = new StepDevice(System.currentTimeMillis(), 250);
     }
 
     @Override
     public void draw() {
+        if (stepDevice.setInterval(System.currentTimeMillis())) grid.step();
         background(0);
         grid.draw(this);
+    }
+
+    @Override
+    public void keyPressed() {
+        Vector dpadInput = dpadMapping.get(key);
+        if (dpadInput != null) grid.player.moveDirection = dpadInput;
+    }
+
+    @Override
+    public void keyReleased() {
+        Vector dpadInput = dpadMapping.get(key);
+        if (dpadInput != null && dpadInput.equals(grid.player.moveDirection)) grid.player.moveDirection = new Vector();
     }
 }
