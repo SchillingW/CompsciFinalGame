@@ -1,4 +1,5 @@
 import processing.core.PApplet;
+import processing.core.PImage;
 
 public class Vector {
 
@@ -42,8 +43,9 @@ public class Vector {
         return new Vector(vector1.x / vector2.x, vector1.y / vector2.y);
     }
 
-    public void drawEllipseFromCenter(Vector size, PApplet applet) {
-        applet.ellipse(x, y, size.x, size.y);
+    public void drawSpriteFromCenter(Vector size, PImage sprite, PApplet applet) {
+        Vector corner = Vector.translate(this, Vector.shrink(size, new Vector(2)).negate());
+        applet.image(sprite, corner.x, corner.y, size.x, size.y);
     }
 
     @Override

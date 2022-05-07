@@ -1,3 +1,4 @@
+import processing.core.PImage;
 import java.util.ArrayList;
 
 public class GameGrid extends Grid {
@@ -13,9 +14,9 @@ public class GameGrid extends Grid {
 
     public GameGrid(
             Vector gridSize, long spawnSteps, double blockSpawnRate, int cellSize,
-            Player playerTemplate, Block blockTemplate) {
+            PImage tileSprite, Player playerTemplate, Block blockTemplate) {
 
-        super(gridSize, cellSize);
+        super(gridSize, cellSize, tileSprite);
         blocks = new ArrayList<>();
         player = playerTemplate.asTemplate(this);
         spawnTimer = new StepDevice(spawnSteps);

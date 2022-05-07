@@ -1,4 +1,5 @@
 import processing.core.PApplet;
+import processing.core.PImage;
 
 public class Main extends PApplet {
 
@@ -28,12 +29,17 @@ public class Main extends PApplet {
                 }
         );
 
-        Block blockTemplate = new Block(2);
-        Player playerTemplate = new Player(1);
+        PImage playerRightSprite = loadImage("art\\PlayerRight.png");
+        PImage playerLeftSprite = loadImage("art\\PlayerLeft.png");
+        PImage blockSprite = loadImage("art\\Block.png");
+        PImage tileSprite = loadImage("art\\Tile.png");
+
+        Block blockTemplate = new Block(2, blockSprite);
+        Player playerTemplate = new Player(false, 1, playerRightSprite, playerLeftSprite);
 
         grid = new GameGrid(
-                new Vector(9, 11), 16, 0.75, 32,
-                playerTemplate, blockTemplate);
+                new Vector(9, 11), 16, 0.5, 32,
+                tileSprite, playerTemplate, blockTemplate);
 
         Vector windowSize = grid.cellToWorldScale(grid.gridSize);
         size(windowSize.x, windowSize.y);
@@ -52,6 +58,7 @@ public class Main extends PApplet {
     public void keyPressed() {
         Vector dpadInput = dpadMapping.get(key);
         if (dpadInput != null) grid.player.moveDirection = dpadInput;
+        grid.player.moveForce();
     }
 
     @Override

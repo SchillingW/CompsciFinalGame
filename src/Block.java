@@ -1,14 +1,16 @@
+import processing.core.PImage;
+
 public class Block extends GridObject<GameGrid> {
 
     private final StepDevice fallTimer;
 
-    public Block(int column, long fallSteps, GameGrid grid) {
-        super(new Vector(column, 0), grid);
+    public Block(int column, long fallSteps, PImage sprite, GameGrid grid) {
+        super(new Vector(column, 0), sprite, grid);
         fallTimer = new StepDevice(fallSteps);
     }
 
-    public Block(long fallSteps) {
-        this(0, fallSteps, null);
+    public Block(long fallSteps, PImage sprite) {
+        this(0, fallSteps, sprite, null);
     }
 
     @Override
@@ -25,6 +27,6 @@ public class Block extends GridObject<GameGrid> {
     }
 
     public Block asTemplate(int column, GameGrid grid) {
-        return new Block(column, fallTimer.intervalsPerStep, grid);
+        return new Block(column, fallTimer.intervalsPerStep, sprite, grid);
     }
 }

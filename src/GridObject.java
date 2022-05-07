@@ -1,13 +1,17 @@
 import processing.core.PApplet;
+import processing.core.PImage;
 
 public class GridObject<T extends Grid> {
 
     public final T grid;
 
+    public PImage sprite;
+
     private Vector position;
 
-    public GridObject(Vector position, T grid) {
+    public GridObject(Vector position, PImage sprite, T grid) {
         this.grid = grid;
+        this.sprite = sprite;
         this.position = position;
     }
 
@@ -21,7 +25,7 @@ public class GridObject<T extends Grid> {
     }
 
     public void draw(PApplet applet) {
-        grid.cellToWorldPos(position).drawEllipseFromCenter(grid.cellToWorldScale(new Vector(1)), applet);
+        grid.drawSprite(position, sprite, applet);
     }
 
     public void step() {

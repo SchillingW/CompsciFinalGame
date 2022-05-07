@@ -1,24 +1,46 @@
+import processing.core.PImage;
+
 public class Player extends GridObject<GameGrid> {
 
     public final StepDevice moveTimer;
 
-    public Vector moveDirection;
+    public PImage spriteRight;
+    public PImage spriteLeft;
 
-    public Player(long moveSteps, GameGrid grid) {
-        super(Vector.shrink(grid == null ? new Vector() : grid.gridSize, new Vector(2)), grid);
-        moveTimer = new StepDevice(moveSteps);
+    public Vector moveDirection;
+    public final boolean moveOnStep;
+
+    public Player(boolean moveOnStep, long moveSteps, PImage spriteRight, PImage spriteLeft, GameGrid grid) {
+        super(Vector.shrink(grid == null ? new Vector() : grid.gridSize, new Vector(2)), spriteRight, grid);
         if (grid != null) fall();
+        moveTimer = new StepDevice(moveSteps);
+        this.spriteLeft = spriteLeft;
+        this.spriteRight = spriteRight;
         moveDirection = new Vector();
+        this.moveOnStep = moveOnStep;
     }
 
-    public Player(long moveSteps) {
-        this(moveSteps, null);
+    public Player(boolean moveOnStep, long moveSteps, PImage spriteRight, PImage spriteLeft) {
+        this(moveOnStep, moveSteps, spriteRight, spriteLeft, null);
     }
 
     @Override
     public void step() {
         super.step();
-        if (moveTimer.addInterval(1)) walkPlayer(moveDirection);
+        if (moveTimer.addInterval(1) && moveOnStep) moveInput();
+    }
+
+    public void moveForce() {
+        if (!moveOnStep) moveInput();
+    }
+
+    public void moveInput() {
+        walkPlayer(moveDirection);
+        if (moveDirection.x == 1) {
+            sprite = spriteRight;
+        } else if (moveDirection.x == -1) {
+            sprite = spriteLeft;
+        }
     }
 
     public boolean walkPlayer(Vector amount) {
@@ -41,6 +63,6 @@ public class Player extends GridObject<GameGrid> {
     }
 
     public Player asTemplate(GameGrid grid) {
-        return new Player(moveTimer.intervalsPerStep, grid);
+        return new Player(moveOnStep, moveTimer.intervalsPerStep, spriteRight, spriteLeft, grid);
     }
 }

@@ -1,11 +1,15 @@
 import processing.core.PApplet;
+import processing.core.PImage;
 
 public abstract class Grid {
+
+    public final PImage tileSprite;
 
     public final int cellSize;
     public final Vector gridSize;
 
-    public Grid(Vector gridSize, int cellSize) {
+    public Grid(Vector gridSize, int cellSize, PImage tileSprite) {
+        this.tileSprite = tileSprite;
         this.cellSize = cellSize;
         this.gridSize = gridSize;
     }
@@ -26,9 +30,20 @@ public abstract class Grid {
     }
 
     public void draw(PApplet applet) {
+
+        for (int i = 0; i < gridSize.x; i++) {
+            for (int j = 0; j < gridSize.y; j++) {
+                drawSprite(new Vector(i, j), tileSprite, applet);
+            }
+        }
+
         for (int i = 0; i < getObjectCount(); i++) {
             getObject(i).draw(applet);
         }
+    }
+
+    public void drawSprite(Vector cell, PImage sprite, PApplet applet) {
+        cellToWorldPos(cell).drawSpriteFromCenter(cellToWorldScale(new Vector(1)), sprite, applet);
     }
 
     public void step() {
