@@ -29,8 +29,8 @@ public class Main extends PApplet {
                 }
         );
 
-        PImage playerRightSprite = loadImage("art\\PlayerRight.png");
-        PImage playerLeftSprite = loadImage("art\\PlayerLeft.png");
+        PImage playerRightSprite = loadImage("art\\Player.png");
+        PImage playerLeftSprite = loadImage("art\\Player.png");
         PImage blockSprite = loadImage("art\\Block.png");
         PImage tileSprite = loadImage("art\\Tile.png");
 
@@ -38,7 +38,7 @@ public class Main extends PApplet {
         Player playerTemplate = new Player(false, 1, playerRightSprite, playerLeftSprite);
 
         grid = new GameGrid(
-                new Vector(9, 11), 16, 0.5, 32,
+                new Vector(9, 11), 16, 0.5, 40,
                 tileSprite, playerTemplate, blockTemplate);
 
         Vector windowSize = grid.cellToWorldScale(grid.gridSize);
