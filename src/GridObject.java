@@ -25,14 +25,11 @@ public class GridObject<T extends Grid> {
     // move player in direction
     public boolean move(Vector amount) {
 
-        // get new position
-        Vector newPos = Vector.translate(position, amount);
-
         // check if position exists within grid
-        if (grid.contains(newPos)) {
+        if (grid.contains(inDirection(amount))) {
 
             // set player position to new position
-            position = Vector.translate(position, amount);
+            position = inDirection(amount);
             return true;
         }
 
@@ -60,7 +57,8 @@ public class GridObject<T extends Grid> {
     // get player position if they moved in direction
     public Vector inDirection(Vector amount) {
 
-        // translate current position by direction
-        return Vector.translate(getPosition(), amount);
+        // translate current position by direction and loop around edges
+        Vector result = Vector.translate(getPosition(), amount);
+        return result.setX(Math.floorMod(result.x, grid.gridSize.x));
     }
 }

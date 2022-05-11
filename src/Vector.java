@@ -24,6 +24,16 @@ public class Vector {
         this(0);
     }
 
+    // return new vector with different x component
+    public Vector setX(int factor) {
+        return new Vector(factor, y);
+    }
+
+    // return new vector with different y component
+    public Vector setY(int factor) {
+        return new Vector(x, factor);
+    }
+
     // check if vector is above desired position in both directions
     public boolean isAbove(Vector min) {
         return x > min.x && y > min.y;
