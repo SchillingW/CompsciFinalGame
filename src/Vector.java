@@ -24,7 +24,6 @@ public class Vector {
         this(0);
     }
 
-
     // check if vector is above desired position in both directions
     public boolean isAbove(Vector min) {
         return x > min.x && y > min.y;
