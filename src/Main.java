@@ -47,12 +47,12 @@ public class Main extends PApplet {
 
         // create templates with settings for player and block objects to be created
         Block blockTemplate = new Block(blockSpriteInteract, blockSpriteInvis);
-        BlockRow blockRowTemplate = new BlockRow(0.3, 4, blockTemplate);
+        BlockRow blockRowTemplate = new BlockRow(0.3, 6, blockTemplate);
         Player playerTemplate = new Player(false, 1, playerRightSprite, playerLeftSprite);
 
         // initialize game grid object with gameplay settings
         grid = new GameGrid(
-                new Vector(9, 11), 16, 32,
+                new Vector(9, 11), 24, 32,
                 tileSprite, playerTemplate, blockRowTemplate);
 
         // set window dimensions based on grid size

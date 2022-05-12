@@ -28,6 +28,7 @@ public class GameGrid extends Grid {
         // store settings
         blocks = new ArrayList<>();
         blockRow = new ArrayList<>();
+        blockRow.add(blockRowTemplate.asTemplate(this));
         this.blockRowTemplate = blockRowTemplate;
         player = playerTemplate.asTemplate(this);
         spawnTimer = new StepDevice(spawnSteps);
