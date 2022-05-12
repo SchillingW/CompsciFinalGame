@@ -9,6 +9,7 @@ public class Main extends PApplet {
 
     // input mapping for movement directions
     private MultiKeyMap<Character, Vector> dpadMapping;
+    private Character upwardsKey;
 
     // timer device for game steps
     private StepDevice stepDevice;
@@ -23,6 +24,7 @@ public class Main extends PApplet {
     public void settings() {
 
         // map input keys to movement directions
+        upwardsKey = 'p';
         dpadMapping = new MultiKeyMap<>(
                 new Character[][] {
                         new Character[] {'d'},
@@ -47,7 +49,7 @@ public class Main extends PApplet {
 
         // create templates with settings for player and block objects to be created
         Block blockTemplate = new Block(blockSpriteInteract, blockSpriteInvis);
-        BlockRow blockRowTemplate = new BlockRow(0.3, 6, blockTemplate);
+        BlockRow blockRowTemplate = new BlockRow(0.5, 6, blockTemplate);
         Player playerTemplate = new Player(false, 1, playerRightSprite, playerLeftSprite);
 
         // initialize game grid object with gameplay settings
@@ -89,6 +91,9 @@ public class Main extends PApplet {
 
         // make player move on input
         grid.player.moveForce();
+
+        // if key is for upwards movement tell player
+        if (key == upwardsKey) grid.player.upwards = true;
     }
 
     // called when kep input release detected
@@ -100,5 +105,8 @@ public class Main extends PApplet {
 
         // if released direction is current direction remove the direction
         if (dpadInput != null && dpadInput.equals(grid.player.moveDirection)) grid.player.moveDirection = new Vector();
+
+        // if key is for upwards movement tell player
+        if (key == upwardsKey) grid.player.upwards = false;
     }
 }

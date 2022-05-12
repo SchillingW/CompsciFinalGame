@@ -12,6 +12,7 @@ public class Player extends GridObject<GameGrid> {
 
     // direction player will move on next movement
     public Vector moveDirection;
+    public boolean upwards;
 
     // should player move on timer or freely by key press
     public final boolean moveOnStep;
@@ -30,6 +31,7 @@ public class Player extends GridObject<GameGrid> {
         this.spriteLeft = spriteLeft;
         this.spriteRight = spriteRight;
         moveDirection = new Vector();
+        upwards = false;
         this.moveOnStep = moveOnStep;
     }
 
@@ -59,15 +61,25 @@ public class Player extends GridObject<GameGrid> {
     // move player based on input direction
     public void moveInput() {
 
-        // make player walk in direction
-        walkPlayer(moveDirection);
-
         // turn player sprite to face movement direction
         if (moveDirection.x == 1) {
             sprite = spriteRight;
         } else if (moveDirection.x == -1) {
             sprite = spriteLeft;
         }
+
+        // make player move
+        if (upwards) {
+            climbPlayer(moveDirection);
+        } else {
+            walkPlayer(moveDirection);
+        }
+    }
+
+    // make player climb in direction
+    public boolean climbPlayer(Vector amount) {
+
+        return true;
     }
 
     // make player walk in direction
