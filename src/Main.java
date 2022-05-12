@@ -41,12 +41,13 @@ public class Main extends PApplet {
         // initialize sprite images
         PImage playerRightSprite = loadImage("art\\PlayerRight.png");
         PImage playerLeftSprite = loadImage("art\\PlayerLeft.png");
-        PImage blockSprite = loadImage("art\\Block.png");
+        PImage blockSpriteInteract = loadImage("art\\Block.png");
+        PImage blockSpriteInvis = loadImage("art\\BlockSmall.png");
         PImage tileSprite = loadImage("art\\Tile.png");
 
         // create templates with settings for player and block objects to be created
-        Block blockTemplate = new Block(blockSprite);
-        BlockRow blockRowTemplate = new BlockRow(0.5, 2, blockTemplate);
+        Block blockTemplate = new Block(blockSpriteInteract, blockSpriteInvis);
+        BlockRow blockRowTemplate = new BlockRow(0.3, 4, blockTemplate);
         Player playerTemplate = new Player(false, 1, playerRightSprite, playerLeftSprite);
 
         // initialize game grid object with gameplay settings

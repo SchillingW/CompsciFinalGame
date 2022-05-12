@@ -1,6 +1,4 @@
 import processing.core.PImage;
-
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 
 // grid object for this game
@@ -78,11 +76,16 @@ public class GameGrid extends Grid {
     // if block was hit release blocks and remove row object
     public void dissolveRow(BlockRow row) {
 
-        // add blocks in block row array to grid array
-        blocks.addAll(row.blocks);
+        // change block visuals to can interact
+        for (Block block : row.blocks) {
+            block.setStateInteract();
+        }
 
         // remove block row object
         blockRow.remove(row);
+
+        // add blocks in block row array to grid array
+        blocks.addAll(row.blocks);
     }
 
     // get block at position in grid
@@ -97,5 +100,12 @@ public class GameGrid extends Grid {
 
         // if no block found return null
         return null;
+    }
+
+    // get whether space in grid is valid
+    public boolean isOpen(Vector cell) {
+
+        // make sure space is in grid and nothing is in spot
+        return contains(cell) && getBlockAt(cell) == null && !cell.equals(player.getPosition());
     }
 }

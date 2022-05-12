@@ -1,5 +1,4 @@
 import processing.core.PApplet;
-
 import java.util.ArrayList;
 
 // row of blocks falling together
@@ -69,31 +68,39 @@ public class BlockRow extends GridObject<GameGrid> {
         if (fallTimer.addInterval(1)) fall();
     }
 
+    // make all blocks in row try to fall
     public boolean fall() {
 
-        // for loop counters
-        int i;
+        if (isBlocked()) return false;
 
         // iterate through blocks in row
-        for (i = 0; i < blocks.size(); i++) {
+        for (Block block : blocks) {
 
-            // check if could fall
-            if (!blocks.get(i).fall()) {
+            // try to fall
+            block.fall();
+        }
 
-                // loop back through moved blocks
-                for (i--; i >= 0; i--) {
-                    blocks.get(i).unfall();
-                }
+        // check if blocked again
+        return !isBlocked();
+    }
 
-                // if block was hit release blocks and remove row object
+    // check below row if next fall will work
+    public boolean isBlocked() {
+
+        // iterate through blocks in row
+        for (Block block : blocks) {
+
+            // check if blocked
+            if (!grid.isOpen(block.inDirection(Block.gravity))) {
+
+                // if reached target dissolve row
                 grid.dissolveRow(this);
-
-                // return failed fall
-                return false;
+                return true;
             }
         }
 
-        return true;
+        // return not blocked
+        return false;
     }
 
     // create valid row object from template instance
