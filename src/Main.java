@@ -45,13 +45,14 @@ public class Main extends PApplet {
         PImage tileSprite = loadImage("art\\Tile.png");
 
         // create templates with settings for player and block objects to be created
-        Block blockTemplate = new Block(2, blockSprite);
+        Block blockTemplate = new Block(blockSprite);
+        BlockRow blockRowTemplate = new BlockRow(0.5, 2, blockTemplate);
         Player playerTemplate = new Player(false, 1, playerRightSprite, playerLeftSprite);
 
         // initialize game grid object with gameplay settings
         grid = new GameGrid(
-                new Vector(9, 11), 16, 0.5, 40,
-                tileSprite, playerTemplate, blockTemplate);
+                new Vector(9, 11), 16, 32,
+                tileSprite, playerTemplate, blockRowTemplate);
 
         // set window dimensions based on grid size
         Vector windowSize = grid.cellToWorldScale(grid.gridSize);

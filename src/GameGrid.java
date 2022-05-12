@@ -1,4 +1,6 @@
 import processing.core.PImage;
+
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 
 // grid object for this game
@@ -7,38 +9,30 @@ public class GameGrid extends Grid {
     // player object reference
     public final Player player;
 
+    // block row object
+    public ArrayList<BlockRow> blockRow;
+    public final BlockRow blockRowTemplate;
+
     // list ob blocks existing in grid
     public final ArrayList<Block> blocks;
 
     // timer device for block spawning
     private final StepDevice spawnTimer;
 
-    // template object for spawning blocks
-    private final Block blockTemplate;
-
-    // randomness rate for spawning blocks in row
-    public final double blockSpawnRate;
-
     // initialize game grid
     public GameGrid(
-            Vector gridSize, long spawnSteps, double blockSpawnRate, int cellSize,
-            PImage tileSprite, Player playerTemplate, Block blockTemplate) {
+            Vector gridSize, long spawnSteps, int cellSize,
+            PImage tileSprite, Player playerTemplate, BlockRow blockRowTemplate) {
 
         // initialize grid object
         super(gridSize, cellSize, tileSprite);
 
-        // initialize empty block list
-        blocks = new ArrayList<>();
-
-        // initialize player to this grid from template
-        player = playerTemplate.asTemplate(this);
-
-        // initialize timer device
-        spawnTimer = new StepDevice(spawnSteps);
-
         // store settings
-        this.blockTemplate = blockTemplate;
-        this.blockSpawnRate = blockSpawnRate;
+        blocks = new ArrayList<>();
+        blockRow = new ArrayList<>();
+        this.blockRowTemplate = blockRowTemplate;
+        player = playerTemplate.asTemplate(this);
+        spawnTimer = new StepDevice(spawnSteps);
     }
 
     // get any generic object existing in grid
@@ -46,10 +40,13 @@ public class GameGrid extends Grid {
     public GridObject getObject(int index) {
 
         // if trying to get first object give player
-        if (index == 0) return player;
+        if (index <= 0) return player;
 
         // otherwise return next block object
-        return blocks.get(index - 1);
+        if (index - 1 < blocks.size()) return blocks.get(index - 1);
+
+        // otherwise return block row at end
+        return blockRow.get(index - 1 - blocks.size());
     }
 
     // get number of generic objects in grid
@@ -57,7 +54,7 @@ public class GameGrid extends Grid {
     public int getObjectCount() {
 
         // number of blocks plus one player
-        return blocks.size() + 1;
+        return blocks.size() + blockRow.size() + 1;
     }
 
     // called on game step
@@ -74,16 +71,18 @@ public class GameGrid extends Grid {
     // spawn row of blocks in grid
     public void spawn() {
 
-        // loop through grid columns
-        for (int i = 0; i < gridSize.x; i++) {
+        // spawn new block row at top
+        blockRow.add(blockRowTemplate.asTemplate(this));
+    }
 
-            // randomly decide whether block should spawn here
-            if (Math.random() < blockSpawnRate) {
+    // if block was hit release blocks and remove row object
+    public void dissolveRow(BlockRow row) {
 
-                // create new block from template and add to grid
-                blocks.add(blockTemplate.asTemplate(i, this));
-            }
-        }
+        // add blocks in block row array to grid array
+        blocks.addAll(row.blocks);
+
+        // remove block row object
+        blockRow.remove(row);
     }
 
     // get block at position in grid
