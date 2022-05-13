@@ -48,7 +48,7 @@ public class Player extends GridObject<GameGrid> {
         super.step();
 
         // if movement timer reached and moves on timer then move
-        if (moveTimer.addInterval(1) && moveOnStep) moveInput();
+        if (moveTimer.addInterval(1) && moveOnStep && !moveDirection.equals(new Vector())) moveInput();
     }
 
     // called on every move input
@@ -74,6 +74,9 @@ public class Player extends GridObject<GameGrid> {
         } else {
             swapPlayer(moveDirection);
         }
+
+        // check if new rows made
+        grid.removeRows();
     }
 
     // make player climb in direction
@@ -82,25 +85,16 @@ public class Player extends GridObject<GameGrid> {
         // check which direction player is moving
         if (amount.x != 0) {
 
-            // check if space is already empty
-            if (grid.getBlockAt(inDirection(amount)) == null) {
+            // loop through cells upwards until grid edge reached
+            for (Vector i = Vector.translate(amount, Block.gravity.negate()); grid.contains(inDirection(i)); i = Vector.translate(i, Block.gravity.negate())) {
 
-                // move player to space
-                move(amount);
-                fall();
+                // check if empty space found
+                if (grid.getBlockAt(inDirection(i)) == null) {
 
-            } else {
-
-                // loop through cells upwards until grid edge reached
-                for (Vector i = amount; grid.contains(inDirection(i)); i = Vector.translate(i, Block.gravity.negate())) {
-
-                    // check if empty space found
-                    if (grid.getBlockAt(inDirection(i)) == null) {
-
-                        // move player above ground
-                        move(i);
-                        break;
-                    }
+                    // move player above ground
+                    move(i);
+                    fall();
+                    break;
                 }
             }
 
@@ -113,8 +107,9 @@ public class Player extends GridObject<GameGrid> {
             for (Vector i = new Vector(); grid.contains(inDirection(i)); i = Vector.translate(i, Block.gravity.negate())) {
 
                 // check if block in spot
+                Block block = grid.getBlockAt(inDirection(i));
                 boolean wasInBlock = inBlock;
-                inBlock = grid.getBlockAt(inDirection(i)) != null;
+                inBlock = block != null;
 
                 // check if just reached new empty space
                 if (!inBlock && wasInBlock) {
@@ -145,31 +140,14 @@ public class Player extends GridObject<GameGrid> {
     // make player walk in direction
     public void swapPlayer(Vector amount) {
 
-        // check which direction to move
-        if (amount.y == -1) {
+        // get block next to player
+        Block target = grid.getBlockAt(inDirection(amount));
+        if (target != null) target.move(amount.negate());
 
-            // find next obstacle above player
-            Vector i;
-            for (i = amount; grid.isOpen(inDirection(i)); i = Vector.translate(i, amount)) {}
-
-            // move object below player
-            Block target = grid.getBlockAt(inDirection(i));
-            if (target != null) target.move(i.negate());
-
-            // move player above object
-            move(amount);
-            fall();
-
-        } else {
-
-            // get block next to player
-            Block target = grid.getBlockAt(inDirection(amount));
-            if (target != null) target.move(amount.negate());
-
-            // swap player with block
-            move(amount);
-            fall();
-        }
+        // swap player with block
+        move(amount);
+        fall();
+        if (target != null) target.fallAll();
     }
 
     // fall to ground level

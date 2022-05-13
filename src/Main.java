@@ -54,7 +54,7 @@ public class Main extends PApplet {
 
         // initialize game grid object with gameplay settings
         grid = new GameGrid(
-                new Vector(10, 10), 32, 32,
+                new Vector(6, 6), 12, 40,
                 tileSprite, playerTemplate, blockRowTemplate);
 
         // set window dimensions based on grid size

@@ -87,6 +87,9 @@ public class GameGrid extends Grid {
 
         // add blocks in block row array to grid array
         blocks.addAll(row.blocks);
+
+        // check for new rows formed
+        removeRows();
     }
 
     // get block at position in grid
@@ -108,5 +111,76 @@ public class GameGrid extends Grid {
 
         // make sure space is in grid and nothing is in spot
         return contains(cell) && getBlockAt(cell) == null && (player == null || !cell.equals(player.getPosition()));
+    }
+
+    // call to check for rows of blocks to remove
+    public void removeRows() {
+
+        for (int i = 0; i < gridSize.y; i++) {
+
+            Block[] inRow = new Block[gridSize.x];
+
+            for (Block block : blocks) {
+                if (block.getPosition().y == i) inRow[block.getPosition().x] = block;
+            }
+
+            boolean shouldRemove = true;
+            for (Block block : inRow) {
+                shouldRemove = shouldRemove && block != null;
+            }
+
+            if (shouldRemove) {
+
+                for (Block block : inRow) {
+                    blocks.remove(block);
+                }
+                for (Block block : blocks) {
+                    if (block.getPosition().y < i) block.move(Block.gravity);
+                }
+                if (player.getPosition().y < i) player.move(Block.gravity);
+
+                i--;
+            }
+        }
+
+        mergeRows();
+    }
+
+    // call to check if any rows in grid may be merged
+    public void mergeRows() {
+
+        boolean changed = false;
+
+        for (int i = 0; i < gridSize.y - 1; i++) {
+
+            Block[] rowTop = new Block[gridSize.x];
+            Block[] rowBottom = new Block[gridSize.x];
+
+            for (Block block : blocks) {
+                if (block.getPosition().y == i) rowTop[block.getPosition().x] = block;
+                if (block.getPosition().y == i + 1) rowBottom[block.getPosition().x] = block;
+            }
+
+            boolean notBlocked = true;
+            boolean anyTop = false;
+            for (int j = 0; j < gridSize.x; j++) {
+                notBlocked = notBlocked && (rowTop[j] == null || (rowBottom[j] == null && !player.getPosition().equals(new Vector(j, i + 1))));
+                anyTop = anyTop || rowTop[j] != null;
+            }
+
+            if (notBlocked && anyTop) {
+
+                changed = true;
+
+                for (Block block : blocks) {
+                    if (block.getPosition().y <= i) block.move(Block.gravity);
+                }
+                if (player.getPosition().y < i) player.move(Block.gravity);
+
+                i--;
+            }
+        }
+
+        if (changed) removeRows();
     }
 }

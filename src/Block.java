@@ -39,6 +39,13 @@ public class Block extends GridObject<GameGrid> {
         return move(gravity);
     }
 
+    // make block fall all the way to next ground
+    public void fallAll() {
+
+        // loop until ground hit
+        while (fall()) {}
+    }
+
     // undo a fall
     public boolean unfall() {
 
