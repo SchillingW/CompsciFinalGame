@@ -107,6 +107,6 @@ public class GameGrid extends Grid {
     public boolean isOpen(Vector cell) {
 
         // make sure space is in grid and nothing is in spot
-        return contains(cell) && getBlockAt(cell) == null && !cell.equals(player.getPosition());
+        return contains(cell) && getBlockAt(cell) == null && (player == null || !cell.equals(player.getPosition()));
     }
 }

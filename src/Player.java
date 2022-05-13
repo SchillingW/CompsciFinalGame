@@ -70,45 +70,106 @@ public class Player extends GridObject<GameGrid> {
 
         // make player move
         if (upwards) {
-            climbPlayer(moveDirection);
+            phasePlayer(moveDirection);
         } else {
-            walkPlayer(moveDirection);
+            swapPlayer(moveDirection);
         }
     }
 
     // make player climb in direction
-    public boolean climbPlayer(Vector amount) {
+    public void phasePlayer(Vector amount) {
 
-        return true;
+        // check which direction player is moving
+        if (amount.x != 0) {
+
+            // check if space is already empty
+            if (grid.getBlockAt(inDirection(amount)) == null) {
+
+                // move player to space
+                move(amount);
+                fall();
+
+            } else {
+
+                // loop through cells upwards until grid edge reached
+                for (Vector i = amount; grid.contains(inDirection(i)); i = Vector.translate(i, Block.gravity.negate())) {
+
+                    // check if empty space found
+                    if (grid.getBlockAt(inDirection(i)) == null) {
+
+                        // move player above ground
+                        move(i);
+                        break;
+                    }
+                }
+            }
+
+        } else if (amount.y == -1) {
+
+            // player starts out of block
+            boolean inBlock = false;
+
+            // loop through cells upwards until grid edge reached
+            for (Vector i = new Vector(); grid.contains(inDirection(i)); i = Vector.translate(i, Block.gravity.negate())) {
+
+                // check if block in spot
+                boolean wasInBlock = inBlock;
+                inBlock = grid.getBlockAt(inDirection(i)) != null;
+
+                // check if just reached new empty space
+                if (!inBlock && wasInBlock) {
+
+                    // move player above ground
+                    move(i);
+                    break;
+                }
+            }
+
+        } else {
+
+            // loop through cells downwards until grid edge reached
+            for (Vector i = Block.gravity; grid.contains(inDirection(i)); i = Vector.translate(i, Block.gravity)) {
+
+                // check if empty cell reached
+                if (grid.getBlockAt(inDirection(i)) == null) {
+
+                    // move player to empty cell
+                    move(i);
+                    fall();
+                    break;
+                }
+            }
+        }
     }
 
     // make player walk in direction
-    public boolean walkPlayer(Vector amount) {
+    public void swapPlayer(Vector amount) {
 
-        // get block object player will hit
-        Block target = grid.getBlockAt(inDirection(amount));
+        // check which direction to move
+        if (amount.y == -1) {
 
-        // if block exists then swap with player
-        if (target != null) target.move(amount.negate());
+            // find next obstacle above player
+            Vector i;
+            for (i = amount; grid.isOpen(inDirection(i)); i = Vector.translate(i, amount)) {}
 
-        // try to move
-        if (!move(amount)) return false;
+            // move object below player
+            Block target = grid.getBlockAt(inDirection(i));
+            if (target != null) target.move(i.negate());
 
-        // fall to ground
-        fall();
+            // move player above object
+            move(amount);
+            fall();
 
-        // return valid movement
-        return true;
-    }
+        } else {
 
-    // move player in direction if nothing blocking
-    public boolean movePlayer(Vector amount) {
+            // get block next to player
+            Block target = grid.getBlockAt(inDirection(amount));
+            if (target != null) target.move(amount.negate());
 
-        // if block in way do not move
-        if (grid.getBlockAt(inDirection(amount)) != null) return false;
-
-        // otherwise try to move
-        return move(amount);
+            // swap player with block
+            move(amount);
+            fall();
+        }
     }
 
     // fall to ground level
@@ -118,7 +179,7 @@ public class Player extends GridObject<GameGrid> {
         int count = 0;
 
         // try to move until blocked
-        while (movePlayer(new Vector(0, 1))) count++;
+        while (grid.isOpen(inDirection(Block.gravity)) && move(Block.gravity)) count++;
 
         // return distance
         return count;
