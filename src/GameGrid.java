@@ -175,7 +175,7 @@ public class GameGrid extends Grid {
                 for (Block block : blocks) {
                     if (block.getPosition().y <= i) block.move(Block.gravity);
                 }
-                if (player.getPosition().y < i) player.move(Block.gravity);
+                if (player.getPosition().y < i || (rowBottom[player.getPosition().x] == null && player.getPosition().y <= i)) player.move(Block.gravity);
 
                 i--;
             }
