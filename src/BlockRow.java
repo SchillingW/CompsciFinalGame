@@ -1,4 +1,5 @@
 import processing.core.PApplet;
+import processing.core.PImage;
 import java.util.ArrayList;
 
 // row of blocks falling together
@@ -14,8 +15,11 @@ public class BlockRow extends GridObject<GameGrid> {
     // randomness rate for spawning blocks in row
     public final double blockSpawnRate;
 
+    // danger indicator tile
+    public final PImage dangerSprite;
+
     // initialize block row
-    public BlockRow(double blockSpawnRate, long fallSteps, Block blockTemplate, GameGrid grid) {
+    public BlockRow(double blockSpawnRate, long fallSteps, PImage dangerSprite, Block blockTemplate, GameGrid grid) {
 
         // initialize grid object
         super(new Vector(), null, grid);
@@ -25,6 +29,7 @@ public class BlockRow extends GridObject<GameGrid> {
         fallTimer = new StepDevice(fallSteps);
         this.blockSpawnRate = blockSpawnRate;
         this.blockTemplate = blockTemplate;
+        this.dangerSprite = dangerSprite;
 
         // populate row with blocks
         if (grid != null) {
@@ -43,15 +48,36 @@ public class BlockRow extends GridObject<GameGrid> {
     }
 
     // initialize template block row without grid
-    public BlockRow(double blockSpawnRate, long fallSteps, Block blockTemplate) {
-        this(blockSpawnRate, fallSteps, blockTemplate, null);
+    public BlockRow(double blockSpawnRate, long fallSteps, PImage dangerSprite, Block blockTemplate) {
+        this(blockSpawnRate, fallSteps, dangerSprite, blockTemplate, null);
     }
 
     @Override
     public void draw(PApplet applet) {
 
+        // initialize hit counter
+        boolean blockWillHit = false;
+
         // iterate through blocks in row
         for (Block block : blocks) {
+
+            // check if any block will hit
+            if (!grid.isOpenNoPlayer(block.getPosition().setY(block.getPosition().y + 2))) blockWillHit = true;
+        }
+
+        // iterate through blocks in row
+        for (Block block : blocks) {
+
+            // draw if any blok is about to hit
+            if (blockWillHit) {
+
+                // iterate through spaces below block
+                for (int i = block.getPosition().y; i < grid.gridSize.y; i++) {
+
+                    // draw danger indicator in cell
+                    grid.drawSprite(block.getPosition().setY(i), dangerSprite, applet);
+                }
+            }
 
             // draw each block
             block.draw(applet);
@@ -77,7 +103,7 @@ public class BlockRow extends GridObject<GameGrid> {
         for (Block block : blocks) {
 
             // try to fall
-            block.fall();
+            block.fall(false);
         }
 
         // check if blocked again
@@ -91,7 +117,7 @@ public class BlockRow extends GridObject<GameGrid> {
         for (Block block : blocks) {
 
             // check if blocked
-            if (!grid.isOpen(block.inDirection(Block.gravity))) {
+            if (!grid.isOpenNoPlayer(block.inDirection(Block.gravity))) {
 
                 // if reached target dissolve row
                 grid.dissolveRow(this);
@@ -107,6 +133,6 @@ public class BlockRow extends GridObject<GameGrid> {
     public BlockRow asTemplate(GameGrid grid) {
 
         // initialize row with template data and new grid data
-        return new BlockRow(blockSpawnRate, fallTimer.intervalsPerStep, blockTemplate, grid);
+        return new BlockRow(blockSpawnRate, fallTimer.intervalsPerStep, dangerSprite, blockTemplate, grid);
     }
 }

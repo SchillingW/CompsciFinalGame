@@ -1,7 +1,11 @@
+import processing.core.PApplet;
 import processing.core.PImage;
 
 // player object for game
 public class Player extends GridObject<GameGrid> {
+
+    // main applet
+    public PApplet mainApplet;
 
     // timer device for movement
     public final StepDevice moveTimer;
@@ -18,7 +22,8 @@ public class Player extends GridObject<GameGrid> {
     public final boolean moveOnStep;
 
     // initialize player object
-    public Player(boolean moveOnStep, long moveSteps, PImage spriteRight, PImage spriteLeft, GameGrid grid) {
+    public Player(boolean moveOnStep, long moveSteps,
+                  PImage spriteRight, PImage spriteLeft, GameGrid grid, PApplet applet) {
 
         // initialize grid object
         super(Vector.shrink(grid == null ? new Vector() : grid.gridSize, new Vector(2)), spriteRight, grid);
@@ -27,6 +32,7 @@ public class Player extends GridObject<GameGrid> {
         if (grid != null) fall();
 
         // store settings
+        mainApplet = applet;
         moveTimer = new StepDevice(moveSteps);
         this.spriteLeft = spriteLeft;
         this.spriteRight = spriteRight;
@@ -36,8 +42,9 @@ public class Player extends GridObject<GameGrid> {
     }
 
     // initialize player object as template without grid
-    public Player(boolean moveOnStep, long moveSteps, PImage spriteRight, PImage spriteLeft) {
-        this(moveOnStep, moveSteps, spriteRight, spriteLeft, null);
+    public Player(boolean moveOnStep, long moveSteps,
+                  PImage spriteRight, PImage spriteLeft, PApplet applet) {
+        this(moveOnStep, moveSteps, spriteRight, spriteLeft, null, applet);
     }
 
     // called on major game step
@@ -163,10 +170,17 @@ public class Player extends GridObject<GameGrid> {
         return count;
     }
 
+    // make player die and ame end
+    public void kill() {
+
+        // exit window
+        mainApplet.exit();
+    }
+
     // create valid player object from template instance
     public Player asTemplate(GameGrid grid) {
 
         // initialize new player with template and grid data
-        return new Player(moveOnStep, moveTimer.intervalsPerStep, spriteRight, spriteLeft, grid);
+        return new Player(moveOnStep, moveTimer.intervalsPerStep, spriteRight, spriteLeft, grid, mainApplet);
     }
 }

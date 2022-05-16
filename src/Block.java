@@ -27,10 +27,10 @@ public class Block extends GridObject<GameGrid> {
     }
 
     // fall one block if nothing below
-    public boolean fall() {
+    public boolean fall(boolean usePlayer) {
 
         // if player below then stop
-        if (inDirection(gravity).equals(grid.player.getPosition())) return false;
+        if (usePlayer && inDirection(gravity).equals(grid.player.getPosition())) return false;
 
         // if other block below then stop
         if (grid.getBlockAt(inDirection(gravity)) != null) return false;
@@ -43,7 +43,7 @@ public class Block extends GridObject<GameGrid> {
     public void fallAll() {
 
         // loop until ground hit
-        while (fall()) {}
+        while (fall(true)) {}
     }
 
     // undo a fall

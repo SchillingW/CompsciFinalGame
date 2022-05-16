@@ -38,14 +38,15 @@ public class GameGrid extends Grid {
     @Override
     public GridObject getObject(int index) {
 
-        // if trying to get first object give player
-        if (index <= 0) return player;
+        // return next block object
+        if (index < blocks.size()) return blocks.get(index);
+        index -= blocks.size();
 
-        // otherwise return next block object
-        if (index - 1 < blocks.size()) return blocks.get(index - 1);
+        // return block row at end
+        if (index < blockRow.size()) return blockRow.get(index);
 
-        // otherwise return block row at end
-        return blockRow.get(index - 1 - blocks.size());
+        // return player object
+        return player;
     }
 
     // get number of generic objects in grid
@@ -77,9 +78,19 @@ public class GameGrid extends Grid {
     // if block was hit release blocks and remove row object
     public void dissolveRow(BlockRow row) {
 
-        // change block visuals to can interact
+        // iterate through blocks
         for (Block block : row.blocks) {
+
+            // change block visuals
             block.setStateInteract();
+
+            // make sure block doesn't land on player
+            if (!isOpen(block.getPosition())) player.kill();
+
+            // kill player if below landing block
+            for (int i = block.getPosition().y; i < gridSize.y; i++) {
+                if (player.getPosition().equals(block.getPosition().setY(i))) player.kill();
+            }
         }
 
         // remove block row object
@@ -111,6 +122,13 @@ public class GameGrid extends Grid {
 
         // make sure space is in grid and nothing is in spot
         return contains(cell) && getBlockAt(cell) == null && (player == null || !cell.equals(player.getPosition()));
+    }
+
+    // get whether space in grid is valid
+    public boolean isOpenNoPlayer(Vector cell) {
+
+        // make sure space is in grid and nothing is in spot
+        return contains(cell) && getBlockAt(cell) == null;
     }
 
     // call to check for rows of blocks to remove

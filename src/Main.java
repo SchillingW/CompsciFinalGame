@@ -46,15 +46,16 @@ public class Main extends PApplet {
         PImage blockSpriteInteract = loadImage("art\\Block.png");
         PImage blockSpriteInvis = loadImage("art\\BlockSmall.png");
         PImage tileSprite = loadImage("art\\Tile.png");
+        PImage dangerTileSprite = loadImage("art\\DangerTile.png");
 
         // create templates with settings for player and block objects to be created
         Block blockTemplate = new Block(blockSpriteInteract, blockSpriteInvis);
-        BlockRow blockRowTemplate = new BlockRow(0.5, 4, blockTemplate);
-        Player playerTemplate = new Player(false, 1, playerRightSprite, playerLeftSprite);
+        BlockRow blockRowTemplate = new BlockRow(0.5, 4, dangerTileSprite, blockTemplate);
+        Player playerTemplate = new Player(false, 1, playerRightSprite, playerLeftSprite, this);
 
         // initialize game grid object with gameplay settings
         grid = new GameGrid(
-                new Vector(6, 6), 12, 40,
+                new Vector(6, 6), 16, 40,
                 tileSprite, playerTemplate, blockRowTemplate);
 
         // set window dimensions based on grid size
