@@ -13,13 +13,15 @@ public class BlockRow extends GridObject<GameGrid> {
     private final StepDevice fallTimer;
 
     // randomness rate for spawning blocks in row
-    public final double blockSpawnRate;
+    public final int minBlockNum;
+    public final int maxBlockNum;
 
     // danger indicator tile
     public final PImage dangerSprite;
 
     // initialize block row
-    public BlockRow(double blockSpawnRate, long fallSteps, PImage dangerSprite, Block blockTemplate, GameGrid grid) {
+    public BlockRow(int minBlockNum, int maxBlockNum, long fallSteps,
+                    PImage dangerSprite, Block blockTemplate, GameGrid grid) {
 
         // initialize grid object
         super(new Vector(), null, grid);
@@ -27,7 +29,8 @@ public class BlockRow extends GridObject<GameGrid> {
         // store settings
         blocks = new ArrayList<>();
         fallTimer = new StepDevice(fallSteps);
-        this.blockSpawnRate = blockSpawnRate;
+        this.minBlockNum = minBlockNum;
+        this.maxBlockNum = maxBlockNum;
         this.blockTemplate = blockTemplate;
         this.dangerSprite = dangerSprite;
 
@@ -35,28 +38,36 @@ public class BlockRow extends GridObject<GameGrid> {
         populateRow();
     }
 
+    // initialize template block row without grid
+    public BlockRow(int minBlockNum, int maxBlockNum, long fallSteps,
+                    PImage dangerSprite, Block blockTemplate) {
+        this(minBlockNum, maxBlockNum, fallSteps, dangerSprite, blockTemplate, null);
+    }
+
     // add members to row
     private void populateRow() {
 
-        // populate row with blocks
         if (grid != null) {
 
-            // iterate through grid columns
-            for (int i = 0; i < grid.gridSize.x; i++) {
+            int numBlocks = (int)(Math.random() * (maxBlockNum - minBlockNum + 1) + minBlockNum);
 
-                // randomly decide whether block should spawn here
-                if (Math.random() < blockSpawnRate) {
+            boolean[] toAdd = new boolean[grid.gridSize.x];
 
-                    // create new block from template and add to grid
-                    blocks.add(blockTemplate.asTemplate(i, grid));
+            for (int i = 0; i < numBlocks; i++) {
+
+                int spot = (int)(Math.random() * (grid.gridSize.x - i));
+
+                for (int j = 0; j <= spot; j++) {
+                    if (toAdd[spot]) spot++;
                 }
+
+                toAdd[spot] = true;
+            }
+
+            for (int i = 0; i < grid.gridSize.x; i++) {
+                if (toAdd[i]) blocks.add(blockTemplate.asTemplate(i, grid));
             }
         }
-    }
-
-    // initialize template block row without grid
-    public BlockRow(double blockSpawnRate, long fallSteps, PImage dangerSprite, Block blockTemplate) {
-        this(blockSpawnRate, fallSteps, dangerSprite, blockTemplate, null);
     }
 
     @Override
@@ -140,6 +151,6 @@ public class BlockRow extends GridObject<GameGrid> {
     public BlockRow asTemplate(GameGrid grid) {
 
         // initialize row with template data and new grid data
-        return new BlockRow(blockSpawnRate, fallTimer.intervalsPerStep, dangerSprite, blockTemplate, grid);
+        return new BlockRow(minBlockNum, maxBlockNum, fallTimer.intervalsPerStep, dangerSprite, blockTemplate, grid);
     }
 }

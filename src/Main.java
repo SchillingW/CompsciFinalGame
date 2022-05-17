@@ -50,7 +50,7 @@ public class Main extends PApplet {
         // create templates with settings for player and block objects to be created
         Block blockTemplate = new Block(blockSpriteInteract, blockSpriteInvis);
         Player playerTemplate = new Player(false, 1, playerSprite, playerSprite, this);
-        BlockRow blockRowTemplate = new BlockRow(0.5, 4, dangerTileSprite, blockTemplate);
+        BlockRow blockRowTemplate = new BlockRow(1, 5, 4, dangerTileSprite, blockTemplate);
 
         // initialize game grid object with gameplay settings
         grid = new GameGrid(
