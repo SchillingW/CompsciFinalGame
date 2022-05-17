@@ -17,9 +17,18 @@ public class GameGrid extends Grid {
     // timer device for block spawning
     private final StepDevice spawnTimer;
 
+    // score keeping device
+    private int score;
+    private int currentPerfectFitScore;
+    private final int rowFillScoreMul;
+    private final int rowFillScoreInc;
+    private final int perfectFitScoreStart;
+    private final int perfectFitScoreCount;
+
     // initialize game grid
     public GameGrid(
             Vector gridSize, long spawnSteps, int cellSize,
+            int rowFillScoreMul, int rowFillScoreInc, int perfectFitScoreStart, int perfectFitScoreCount,
             PImage tileSprite, Player playerTemplate, BlockRow blockRowTemplate) {
 
         // initialize grid object
@@ -30,6 +39,12 @@ public class GameGrid extends Grid {
         blockRow = new ArrayList<>();
         blockRow.add(blockRowTemplate.asTemplate(this));
         this.blockRowTemplate = blockRowTemplate;
+        this.rowFillScoreMul = rowFillScoreMul;
+        this.rowFillScoreInc = rowFillScoreInc;
+        this.perfectFitScoreStart = perfectFitScoreStart;
+        this.perfectFitScoreCount = perfectFitScoreCount;
+        currentPerfectFitScore = perfectFitScoreStart;
+        score = 0;
         player = playerTemplate.asTemplate(this);
         spawnTimer = new StepDevice(spawnSteps);
     }
@@ -78,6 +93,10 @@ public class GameGrid extends Grid {
     // if block was hit release blocks and remove row object
     public void dissolveRow(BlockRow row) {
 
+        // checking for perfect fits
+        boolean inEmptyRow = true;
+        boolean allAboveOtherBlock = true;
+
         // iterate through blocks
         for (Block block : row.blocks) {
 
@@ -91,6 +110,23 @@ public class GameGrid extends Grid {
             for (int i = block.getPosition().y; i < gridSize.y; i++) {
                 if (player.getPosition().equals(block.getPosition().setY(i))) player.kill();
             }
+
+            // check for perfect fit in
+            if (getBlockAt(block.getPosition().setY(block.getPosition().y + 1)) == null) allAboveOtherBlock = false;
+        }
+
+        // iterate through columns
+        for (int i = 0; i < gridSize.x; i++) {
+
+            // check for perfect fit above
+            if (getBlockAt(row.blocks.get(0).getPosition().setX(i)) != null) inEmptyRow = false;
+        }
+
+        // see if fits
+        if (!inEmptyRow || allAboveOtherBlock) {
+            successPerfectFit();
+        } else {
+            failPerfectFit();
         }
 
         // remove block row object
@@ -131,6 +167,33 @@ public class GameGrid extends Grid {
         return contains(cell) && getBlockAt(cell) == null;
     }
 
+    // add score to counter
+    private void addScore(int amount) {
+
+        // add to counter
+        score += amount;
+
+        // print new score
+        System.out.println(score);
+    }
+
+    // called on a perfect block row fit
+    private void successPerfectFit() {
+
+        // add to score
+        addScore(currentPerfectFitScore);
+
+        // increment current score multiplier
+        currentPerfectFitScore += perfectFitScoreCount;
+    }
+
+    // called on a failed block row fit
+    private void failPerfectFit() {
+
+        // reset fit score multiplier
+        currentPerfectFitScore = perfectFitScoreStart;
+    }
+
     // call to check for rows of blocks to remove
     public void removeRows() {
 
@@ -148,6 +211,9 @@ public class GameGrid extends Grid {
             }
 
             if (shouldRemove) {
+
+                int rowIndex = gridSize.y - i + rowFillScoreInc;
+                addScore(rowIndex * rowIndex * rowFillScoreMul);
 
                 for (Block block : inRow) {
                     blocks.remove(block);
