@@ -31,6 +31,13 @@ public class BlockRow extends GridObject<GameGrid> {
         this.blockTemplate = blockTemplate;
         this.dangerSprite = dangerSprite;
 
+        // put blocks in row
+        populateRow();
+    }
+
+    // add members to row
+    private void populateRow() {
+
         // populate row with blocks
         if (grid != null) {
 
