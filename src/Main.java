@@ -1,4 +1,5 @@
 import processing.core.PApplet;
+import processing.core.PFont;
 import processing.core.PImage;
 
 // block dropping game with processing library
@@ -13,6 +14,9 @@ public class Main extends PApplet {
 
     // timer device for game steps
     private StepDevice stepDevice;
+
+    // general game font
+    public static PFont font;
 
     // run application
     public static void main(String[] args) {
@@ -54,8 +58,8 @@ public class Main extends PApplet {
 
         // initialize game grid object with gameplay settings
         grid = new GameGrid(
-                new Vector(6, 6), 16, 40,
-                1, 2, 10, 5,
+                new Vector(6, 6), 16, 64,
+                1, 1, 6, 3,
                 tileSprite, playerTemplate, blockRowTemplate);
 
         // set window dimensions based on grid size
@@ -64,6 +68,14 @@ public class Main extends PApplet {
 
         // start game timer
         stepDevice = new StepDevice(System.currentTimeMillis(), 250);
+    }
+
+    // called after settings
+    @Override
+    public void setup() {
+
+        // initialize font
+        font = createFont("art\\PixelFont.ttf", 20);
     }
 
     // called every frame of gameplay

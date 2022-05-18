@@ -1,3 +1,4 @@
+import processing.core.PApplet;
 import processing.core.PImage;
 import java.util.ArrayList;
 
@@ -70,6 +71,18 @@ public class GameGrid extends Grid {
 
         // number of blocks plus one player
         return blocks.size() + blockRow.size() + 1;
+    }
+
+    // draw game visuals
+    @Override
+    public void draw(PApplet applet) {
+
+        // make parent draw
+        super.draw(applet);
+
+        // display current score
+        applet.textFont(Main.font);
+        applet.text(score, 8, 28);
     }
 
     // called on game step
@@ -172,9 +185,6 @@ public class GameGrid extends Grid {
 
         // add to counter
         score += amount;
-
-        // print new score
-        System.out.println(score);
     }
 
     // called on a perfect block row fit
